@@ -5,6 +5,8 @@ on:
     branches:
       - master
 jobs:
+  security_sast:
+    uses: ./.github/workflows/sast-scan.yml
   deploy-heroku:
     name: Deploy Heroku
     runs-on: ubuntu-latest
@@ -13,7 +15,12 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "app-vulnerable2022" #Must be unique in Heroku
-          heroku_email: "roxsrossve@gmail.com"
+          heroku_app_name: "matiacornejo" #Must be unique in Heroku
+          heroku_email: "matia.draper@gmail.com"
           remote_branch: "master"
           usedocker: true
+  security_dast:
+    uses: ./.github/workflows/dast-scan.yml
+    needs: deploy-heroku
+    secrets:
+      HAWK_API_KEY: ${{ secrets.HAWK_API_KEY }}
